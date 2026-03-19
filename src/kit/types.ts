@@ -45,7 +45,7 @@ export class KitError extends Error {
   public readonly exitCode: number;
   public readonly command: string;
   public readonly stderr: string;
-  public readonly cause?: unknown;
+  public override readonly cause?: unknown;
 
   public constructor(
     code: KitErrorCode,

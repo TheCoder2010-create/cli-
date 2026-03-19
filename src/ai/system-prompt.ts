@@ -1,3 +1,9 @@
+import type {
+  AcceptedPlanMemory,
+  CommandOutcomeMemory,
+  SessionPromptMemory
+} from '../context/session.js';
+
 export interface SessionTurn {
   readonly role: 'system' | 'user' | 'assistant';
   readonly content: string;
@@ -8,6 +14,9 @@ export interface SystemPromptContext {
   readonly topLevelFiles: readonly string[];
   readonly kitfileContent: string | null;
   readonly sessionHistory: readonly SessionTurn[];
+  readonly priorPrompts?: readonly SessionPromptMemory[];
+  readonly acceptedPlans?: readonly AcceptedPlanMemory[];
+  readonly recentCommandOutcomes?: readonly CommandOutcomeMemory[];
 }
 
 const kitCliReference = [
@@ -65,6 +74,37 @@ const formatSessionHistory = (sessionHistory: readonly SessionTurn[]): string =>
     .join('\n');
 };
 
+const formatPromptMemory = (prompts: readonly SessionPromptMemory[] | undefined): string => {
+  if (!prompts || prompts.length === 0) {
+    return 'None';
+  }
+
+  return prompts.map((prompt, index) => `${index + 1}. [${prompt.recordedAt}] ${prompt.prompt}`).join('\n');
+};
+
+const formatAcceptedPlans = (acceptedPlans: readonly AcceptedPlanMemory[] | undefined): string => {
+  if (!acceptedPlans || acceptedPlans.length === 0) {
+    return 'None';
+  }
+
+  return acceptedPlans
+    .map((plan, index) => `${index + 1}. [${plan.acceptedAt}] ${plan.summary} :: ${plan.steps.join(' | ')}`)
+    .join('\n');
+};
+
+const formatCommandOutcomes = (commandOutcomes: readonly CommandOutcomeMemory[] | undefined): string => {
+  if (!commandOutcomes || commandOutcomes.length === 0) {
+    return 'None';
+  }
+
+  return commandOutcomes
+    .map(
+      (commandOutcome, index) =>
+        `${index + 1}. [${commandOutcome.recordedAt}] (${commandOutcome.outcome}/${commandOutcome.exitCode}) ${commandOutcome.command} :: ${commandOutcome.summary}`
+    )
+    .join('\n');
+};
+
 /**
  * Builds the system prompt for planner models using local repository context.
  */
@@ -82,6 +122,9 @@ export const buildSystemPrompt = (context: SystemPromptContext): string => {
     `- top-level files: ${topLevelFiles}`,
     `- Kitfile content:\n${kitfileContent}`,
     `- session history:\n${formatSessionHistory(context.sessionHistory)}`,
+    `- prior prompts:\n${formatPromptMemory(context.priorPrompts)}`,
+    `- accepted plans:\n${formatAcceptedPlans(context.acceptedPlans)}`,
+    `- recent command outcomes:\n${formatCommandOutcomes(context.recentCommandOutcomes)}`,
     planSchemaContract
   ].join('\n\n');
 };

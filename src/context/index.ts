@@ -9,3 +9,6 @@ export const createAppContext = (cwd: string, model: SupportedModelId): AppConte
   cwd,
   model
 });
+
+export * from './scanner.js';
+export * from './session.js';
