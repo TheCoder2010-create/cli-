@@ -8,19 +8,21 @@ const shellQuote = (value: string): string => {
     return "''";
   }
 
-  return /[^A-Za-z0-9_./:-]/.test(value) ? `'${value.replace(/'/g, `'"'"'`)}'` : value;
+  return /[^A-Za-z0-9_./:=-]/.test(value) ? `'${value.replace(/'/g, `'"'"'`)}'` : value;
 };
 
-const buildKitArgs = <TArgs extends readonly string[]>(subcommand: string, args: TArgs): readonly [string, ...TArgs] =>
-  [subcommand, ...args];
+const buildKitArgs = <TSubcommand extends string, TArgs extends readonly string[]>(
+  subcommand: TSubcommand,
+  args: TArgs
+): readonly [TSubcommand, ...TArgs] => [subcommand, ...args];
 
 export const buildKitCommand = (args: readonly string[]): string => ['kit', ...args].map(shellQuote).join(' ');
 
-const createKitCommand = <TArgs extends readonly string[]>(
-  subcommand: string,
+const createKitCommand = <TSubcommand extends string, TArgs extends readonly string[]>(
+  subcommand: TSubcommand,
   args: TArgs,
   requiresConfirmation: boolean
-): ModelKit<readonly [string, ...TArgs]> => {
+): ModelKit<readonly [TSubcommand, ...TArgs]> => {
   const fullArgs = buildKitArgs(subcommand, args);
   const command = buildKitCommand(fullArgs);
 

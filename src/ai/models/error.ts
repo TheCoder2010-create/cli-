@@ -10,7 +10,7 @@ const redactSecrets = (value: string): string =>
  */
 export class AIError extends Error {
   public readonly code: AIErrorCode;
-  public readonly cause?: unknown;
+  public override readonly cause?: unknown;
 
   public constructor(code: AIErrorCode, message: string, options?: { cause?: unknown }) {
     super(redactSecrets(message));
