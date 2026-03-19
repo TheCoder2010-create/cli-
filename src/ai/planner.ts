@@ -6,6 +6,7 @@ import { buildSystemPrompt, type SystemPromptContext } from './system-prompt.js'
 export interface PlannerRequest {
   readonly context: SystemPromptContext;
   readonly userMessage: string;
+  readonly model?: string;
 }
 
 type PlannerModel = 'claude' | 'openai';
@@ -14,9 +15,11 @@ const resolvePlannerModel = (value: string | undefined): PlannerModel => {
   switch (value?.trim().toLowerCase()) {
     case 'openai':
     case 'gpt-4o':
+    case 'gpt-5':
       return 'openai';
     case 'claude':
     case 'claude-sonnet-4-20250514':
+    case 'claude-sonnet-4-5':
     case undefined:
     case '':
       return 'claude';
@@ -28,11 +31,11 @@ const resolvePlannerModel = (value: string | undefined): PlannerModel => {
 /**
  * Generates a validated plan using the configured model adapter.
  */
-export const createPlan = async ({ context, userMessage }: PlannerRequest): Promise<PlanType> => {
+export const createPlan = async ({ context, userMessage, model }: PlannerRequest): Promise<PlanType> => {
   const systemPrompt = buildSystemPrompt(context);
-  const model = resolvePlannerModel(process.env.KITAI_MODEL);
+  const resolvedModel = resolvePlannerModel(model ?? process.env.KITAI_MODEL);
 
-  const result = model === 'openai'
+  const result = resolvedModel === 'openai'
     ? await callOpenAI(systemPrompt, userMessage)
     : await callClaude(systemPrompt, userMessage);
 
