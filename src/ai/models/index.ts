@@ -1,4 +1,4 @@
-export const supportedModelIds = ['claude-sonnet-4-5', 'gpt-5'] as const;
+export const supportedModelIds = ['claude-sonnet-4-5', 'gpt-5', 'llama3.2'] as const;
 
 export type SupportedModelId = (typeof supportedModelIds)[number];
 
@@ -8,3 +8,4 @@ export const isSupportedModelId = (value: string): value is SupportedModelId =>
 export { AIError } from './error.js';
 export { callClaude } from './claude.js';
 export { callOpenAI } from './openai.js';
+export { callOllama } from './ollama.js';

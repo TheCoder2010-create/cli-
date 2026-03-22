@@ -6,10 +6,12 @@ describe('supportedModelIds', () => {
   it('includes the default model identifiers', () => {
     expect(supportedModelIds).toContain('gpt-5');
     expect(supportedModelIds).toContain('claude-sonnet-4-5');
+    expect(supportedModelIds).toContain('llama3.2');
   });
 
   it('validates model identifiers', () => {
     expect(isSupportedModelId('gpt-5')).toBe(true);
+    expect(isSupportedModelId('llama3.2')).toBe(true);
     expect(isSupportedModelId('unknown-model')).toBe(false);
   });
 });
