@@ -85,6 +85,11 @@ describe('createPlan', () => {
       userMessage: 'Plan the next change.'
     });
 
+    expect(callOpenAI).toHaveBeenCalledTimes(1);
+    expect(callClaude).not.toHaveBeenCalled();
+    expect(result.summary).toBe('OpenAI plan');
+  });
+
   it('routes to the Ollama adapter when KITAI_MODEL requests it', async () => {
     process.env.KITAI_MODEL = 'llama3.2';
     callOllama.mockResolvedValue({
@@ -118,3 +123,4 @@ describe('createPlan', () => {
     expect(callOpenAI).not.toHaveBeenCalled();
     expect(result.summary).toBe('Ollama plan');
   });
+});
